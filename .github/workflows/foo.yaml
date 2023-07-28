@@ -3,14 +3,14 @@ name: Tag Release
 on:
   pull_request:
     branches:
-      - master
+      - deploy
     types:
       - closed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
+    if: ${{ github.event.pull_request.merged == true }}
 
     steps:
       - name: Check out code
