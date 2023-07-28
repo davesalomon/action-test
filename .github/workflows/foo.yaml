@@ -1,13 +1,16 @@
-name: Deploy Workflow
+name: Tag Release
 
 on:
   pull_request:
+    branches:
+      - master
     types:
       - closed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
 
     steps:
       - name: Check out code
@@ -15,16 +18,14 @@ jobs:
 
       - name: Calculate tag
         id: calculate-tag
-        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
+        
         run: |
           export tag="${{ github.head_ref }}"
           export tag=$(echo $tag | tr '-' '.')
           echo "NEW_TAG=${tag#*/}" >> "$GITHUB_OUTPUT"
 
       - name: Tag Commit
-        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
         run: git tag ${{ steps.calculate-tag.outputs.NEW_TAG }}
 
       - name: Push Tag
-        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
         run: git push --tags
