@@ -1,0 +1,29 @@
+name: Deploy Workflow
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Calculate tag
+        id: calculate-tag
+        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
+        run: |
+          export tag="${{ github.head_ref }}"
+          echo "NEW_TAG=$($tag#*/})" >> "$GITHUB_OUTPUT"
+
+      - name: Tag Commit
+        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
+        run: git tag ${{ steps.calculate-tag.outputs.NEW_TAG }}
+
+      - name: Push Tag
+        if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
+        run: git push --tags
