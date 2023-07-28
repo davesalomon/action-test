@@ -17,7 +17,8 @@ jobs:
         id: calculate-tag
         if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
         run: |
-          export tag="${{ github.head_ref }} | tr '-' '.'"
+          export tag="${{ github.head_ref }}"
+          export tag=$(echo $tag | tr '-' '.')
           echo "NEW_TAG=${tag#*/}" >> "$GITHUB_OUTPUT"
 
       - name: Tag Commit
