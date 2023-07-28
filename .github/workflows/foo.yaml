@@ -2,15 +2,13 @@ name: Tag Release
 
 on:
   pull_request:
-    branches:
-      - 'deploy/**'
     types:
       - closed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'deploy') }}
 
     steps:
       - name: Check out code
